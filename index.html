@@ -1,1 +1,191 @@
 index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shoply - Online Store</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0; padding: 0;
+    background: #f8f8f8;
+}
+header {
+    background: #0077cc;
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+}
+header h1 {
+    margin: 0;
+}
+.search-bar {
+    margin: 15px;
+    display: flex;
+    justify-content: center;
+}
+.search-bar input {
+    width: 80%;
+    padding: 10px;
+    font-size: 16px;
+}
+main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px;
+}
+.product {
+    background: #fff;
+    border-radius: 8px;
+    margin: 10px;
+    padding: 10px;
+    width: 250px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.product img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.product h3 {
+    margin: 10px 0 5px;
+}
+.product p {
+    font-size: 14px;
+    color: #555;
+}
+.product .price {
+    font-weight: bold;
+    margin: 5px 0;
+}
+.product button {
+    background: #0077cc;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.cart {
+    position: fixed;
+    right: 0;
+    top: 0;
+    background: white;
+    width: 300px;
+    height: 100%;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    padding: 15px;
+    overflow-y: auto;
+}
+.cart h2 {
+    margin-top: 0;
+}
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+.cart-item button {
+    background: red;
+    color: white;
+    border: none;
+    padding: 4px 6px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.total {
+    font-weight: bold;
+    margin-top: 15px;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Shoply</h1>
+</header>
+
+<div class="search-bar">
+    <input type="text" id="search" placeholder="Search products...">
+</div>
+
+<main id="product-list">
+    <!-- Products will be injected here -->
+</main>
+
+<div class="cart" id="cart">
+    <h2>Your Cart</h2>
+    <div id="cart-items"></div>
+    <div class="total">Total: $<span id="total-price">0</span></div>
+</div>
+
+<script>
+const products = [
+    {id: 1, name: "Wireless Headphones", price: 49.99, description: "High-quality sound with noise cancellation.", image: "https://via.placeholder.com/250x200?text=Headphones"},
+    {id: 2, name: "Smartwatch", price: 99.99, description: "Track your fitness and notifications.", image: "https://via.placeholder.com/250x200?text=Smartwatch"},
+    {id: 3, name: "Bluetooth Speaker", price: 29.99, description: "Portable speaker with deep bass.", image: "https://via.placeholder.com/250x200?text=Speaker"},
+    {id: 4, name: "Gaming Mouse", price: 19.99, description: "Ergonomic design with RGB lights.", image: "https://via.placeholder.com/250x200?text=Gaming+Mouse"},
+    {id: 5, name: "4K Monitor", price: 299.99, description: "Crisp and clear UHD display.", image: "https://via.placeholder.com/250x200?text=4K+Monitor"}
+];
+
+let cart = [];
+
+function displayProducts(list) {
+    const container = document.getElementById("product-list");
+    container.innerHTML = "";
+    list.forEach(product => {
+        const div = document.createElement("div");
+        div.className = "product";
+        div.innerHTML = `
+            <img src="${product.image}" alt="${product.name}">
+            <h3>${product.name}</h3>
+            <p>${product.description}</p>
+            <div class="price">$${product.price.toFixed(2)}</div>
+            <button onclick="addToCart(${product.id})">Add to Cart</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function addToCart(id) {
+    const product = products.find(p => p.id === id);
+    cart.push(product);
+    updateCart();
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+
+function updateCart() {
+    const cartContainer = document.getElementById("cart-items");
+    const totalPriceElem = document.getElementById("total-price");
+    cartContainer.innerHTML = "";
+    let total = 0;
+    cart.forEach((item, index) => {
+        total += item.price;
+        cartContainer.innerHTML += `
+            <div class="cart-item">
+                <span>${item.name} - $${item.price.toFixed(2)}</span>
+                <button onclick="removeFromCart(${index})">X</button>
+            </div>
+        `;
+    });
+    totalPriceElem.textContent = total.toFixed(2);
+}
+
+document.getElementById("search").addEventListener("input", e => {
+    const query = e.target.value.toLowerCase();
+    const filtered = products.filter(p => p.name.toLowerCase().includes(query) || p.description.toLowerCase().includes(query));
+    displayProducts(filtered);
+});
+
+displayProducts(products);
+</script>
+
+</body>
+</html>
